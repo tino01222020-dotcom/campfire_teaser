@@ -1,0 +1,18 @@
+{
+  "name": "crowdfuel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.0",
+    "@vercel/kv": "^2.0.0",
+    "@vercel/postgres": "^0.10.0"
+  }
+}

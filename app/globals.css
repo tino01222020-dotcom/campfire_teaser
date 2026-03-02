@@ -1,0 +1,4 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', 'Noto Sans JP', sans-serif; background: #F6F5F2; color: #1A1917; }
+::selection { background: #E85D26; color: #fff; }
+button { font-family: inherit; }

@@ -1,0 +1,13 @@
+{
+  "name": "crowdfuel-claude-worker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Local Claude Code worker that polls Vercel for AI tasks",
+  "scripts": {
+    "start": "node worker.js",
+    "dev": "node --watch worker.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}

@@ -6,6 +6,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT, TASK_PROMPTS } from './prompts.js';
+import { handleGeminiTask } from './gemini-handler.js';
 import { readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -30,13 +31,21 @@ if (existsSync(envPath)) {
 const VERCEL_APP_URL = process.env.VERCEL_APP_URL;
 const WORKER_SECRET = process.env.WORKER_SECRET;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL || '10000');
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-5-20250929';
+
+// Gemini tasks (routed to Google AI instead of Claude)
+const GEMINI_TASK_TYPES = ['generate_image', 'generate_returns', 'expand_returns'];
 
 if (!VERCEL_APP_URL || !WORKER_SECRET || !ANTHROPIC_API_KEY) {
   console.error('❌ Missing required env vars. Copy .env.example to .env and fill in values.');
   console.error('   Required: VERCEL_APP_URL, WORKER_SECRET, ANTHROPIC_API_KEY');
   process.exit(1);
+}
+
+if (!GEMINI_API_KEY) {
+  log('⚠️', 'GEMINI_API_KEY未設定。画像生成・リターン設計は利用できません。');
 }
 
 const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
@@ -181,7 +190,13 @@ async function pollOnce() {
       try {
         await markProcessing(task.id);
 
-        const result = await processWithClaude(task);
+        let result;
+        if (GEMINI_TASK_TYPES.includes(task.task_type)) {
+          log('🎨', `Geminiタスク処理: [${task.task_type}]`);
+          result = await handleGeminiTask(task);
+        } else {
+          result = await processWithClaude(task);
+        }
 
         // Auto-apply result (LP deploy, sequence create, etc.)
         await applyResult(task, result);
@@ -204,10 +219,11 @@ async function pollOnce() {
 async function main() {
   console.log('');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('  🔥 CrowdFuel Claude Worker v1.0');
+  console.log('  🔥 CrowdFuel AI Worker v2.0');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`  📡 App: ${VERCEL_APP_URL}`);
-  console.log(`  🤖 Model: ${MODEL}`);
+  console.log(`  🤖 Claude: ${MODEL}`);
+  console.log(`  🎨 Gemini: ${GEMINI_API_KEY ? '有効' : '無効'}`);
   console.log(`  ⏱️  Poll: ${POLL_INTERVAL / 1000}s`);
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('');

@@ -48,6 +48,9 @@ export async function POST(request) {
       'analyze_data',      // データ分析・レポート
       'generate_ad_copy',  // 広告コピー生成
       'suggest_sequence',  // シーケンス提案
+      'generate_image',    // クリエイティブ画像生成 (Gemini)
+      'generate_returns',  // リターンアイデア生成 (Gemini)
+      'expand_returns',    // リターンパッケージ生成 (Gemini)
     ];
 
     if (!validTypes.includes(task_type)) {

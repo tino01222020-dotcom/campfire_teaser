@@ -1,6 +1,10 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import KPISimulator from "./KPISimulator";
+import CustomerRoadmap from "./CustomerRoadmap";
+import ImageGenerator from "./ImageGenerator";
+import ReturnDesigner from "./ReturnDesigner";
 
 // ━━ CAMPFIRE Design Tokens (Source: campfire-all-color-tokens.csv) ━━
 const bg = {
@@ -177,8 +181,12 @@ function Sidebar({ active, onNav, phase }) {
   const items = [
     { id: "dashboard", label: "ダッシュボード", icon: "⊞" },
     { id: "ads", label: "広告管理", icon: "◈" },
+    { id: "kpi_sim", label: "KPIシミュレーション", icon: "📊" },
     { id: "lp", label: "LP 作成・デプロイ", icon: "▤" },
+    { id: "creative", label: "画像生成", icon: "🎨" },
+    { id: "returns", label: "リターン設計", icon: "🎁" },
     { id: "nurture", label: "ナーチャリング", icon: "⇢" },
+    { id: "roadmap", label: "集客ロードマップ", icon: "🗺️" },
     { id: "analytics", label: "レポート", icon: "◔" },
     { id: "settings", label: "設定・連携", icon: "⚙" },
   ];
@@ -831,13 +839,17 @@ function SettingsPage() {
 export default function CrowdFuelApp() {
   const [page, setPage] = useState("dashboard");
   const [phase, setPhase] = useState("lead");
-  const titles = { dashboard: "ダッシュボード", ads: "広告管理", lp: "LP 作成・デプロイ", nurture: "ナーチャリング", analytics: "レポート", settings: "設定・連携" };
+  const titles = { dashboard: "ダッシュボード", ads: "広告管理", kpi_sim: "KPIシミュレーション", lp: "LP 作成・デプロイ", creative: "画像生成", returns: "リターン設計", nurture: "ナーチャリング", roadmap: "集客ロードマップ", analytics: "レポート", settings: "設定・連携" };
   const renderPage = () => {
     switch (page) {
       case "dashboard": return <DashboardPage phase={phase}/>;
       case "ads": return <AdsPage phase={phase}/>;
+      case "kpi_sim": return <KPISimulator V={V} phase={phase} />;
       case "lp": return <LPPage phase={phase}/>;
+      case "creative": return <ImageGenerator V={V} />;
+      case "returns": return <ReturnDesigner V={V} targetAmount={1000000} />;
       case "nurture": return <NurturePage phase={phase}/>;
+      case "roadmap": return <CustomerRoadmap V={V} targetAmount={1000000} />;
       case "analytics": return <AnalyticsPage phase={phase}/>;
       case "settings": return <SettingsPage />;
       default: return <DashboardPage phase={phase}/>;
@@ -849,7 +861,7 @@ export default function CrowdFuelApp() {
       <main style={{ flex: 1, marginLeft: 232, padding: "24px 36px", maxWidth: 1060 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <h1 style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Outfit',sans-serif", letterSpacing: "-0.02em" }}>{titles[page]}</h1>
-          {page!=="settings" && <PhaseToggle phase={phase} setPhase={setPhase}/>}
+          {!["settings","kpi_sim","creative","returns","roadmap"].includes(page) && <PhaseToggle phase={phase} setPhase={setPhase}/>}
         </div>
         {renderPage()}
       </main>
